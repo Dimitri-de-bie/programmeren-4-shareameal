@@ -21,6 +21,15 @@ app.get("/", (req, res) => {
   });
 });
 
+//https://dimitri-sharemeal.herokuapp.com/
+
+//json die is post die ik mee geef
+// {
+//   "name": "",
+//   "email": "",
+//   "geboortejaar":
+// }
+
 //user toevoegen
 app.post("/api/user", (req, res) => {
   let user = req.body;
@@ -113,7 +122,6 @@ app.post("/api/user/:userId", (req, res, next) => {
 app.delete("/api/user/:userId", (req, res, next) => {
   const userId = req.params.userId;
   console.log(`user met ID ${userId} gezocht`);
-  let user = database.filter((item) => item.id == userId);
 
   let controle;
   let deletedeze;
@@ -128,7 +136,6 @@ app.delete("/api/user/:userId", (req, res, next) => {
 
   if (controle == true) {
     database.splice(deletedeze, 1);
-    console.log(user);
     res.status(200).json({
       status: 200,
       result: "user has been deleted",
