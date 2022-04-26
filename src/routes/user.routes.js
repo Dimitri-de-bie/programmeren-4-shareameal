@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 // }
 
 //user toevoegen
-router.post("/api/user", userController.addUser);
+router.post("/api/user", userController.validateUser, userController.addUser);
 
 //specifieke user ophalen
 router.get("/api/user/:userId", userController.getUserById);

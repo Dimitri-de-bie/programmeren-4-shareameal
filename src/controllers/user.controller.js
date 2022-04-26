@@ -1,14 +1,45 @@
+const assert = require("assert");
 let database = [];
 let id = 0;
 
 let controller = {
+  validateUser: (req, res, next) => {
+    let user = req.body;
+    let {
+      firstName,
+      lastName,
+      password,
+      street,
+      city,
+      emailAdress,
+      phoneNumber,
+    } = user;
+    try {
+      assert(typeof firstName === "string", "Firstname must be a string");
+      assert(typeof lastName === "string", "Lastname must be a string");
+      assert(typeof password === "string", "password must be a string");
+      assert(typeof street === "string", "street must be a string");
+      assert(typeof city === "string", "city must be a string");
+      assert(typeof emailAdress === "string", "emailAdress must be a string");
+      assert(typeof phoneNumber === "string", "phoneNumer must be a string");
+
+      next();
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({
+        status: 400,
+        result: err.toString(),
+      });
+    }
+    next();
+  },
   addUser: (req, res) => {
     let user = req.body;
-    let email = req.body.email;
+    let emailAdress = req.body.emailAdress;
     let controle;
 
     for (let i = 0; i < database.length; i++) {
-      if (database[i].email == email) {
+      if (database[i].emailAdress == emailAdress) {
         controle = false;
       }
     }
