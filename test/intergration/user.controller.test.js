@@ -8,7 +8,7 @@ chai.should();
 chai.use(chaiHttp);
 
 describe("Manage users", () => {
-  describe("UC-201 add users /api/movie", () => {
+  describe("UC-201 add users /api/user", () => {
     beforeEach((done) => {
       database = [];
       done();
