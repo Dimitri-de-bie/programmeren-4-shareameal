@@ -14,7 +14,7 @@ describe("Manage users", () => {
       done();
     });
 
-    it("When a required input is missing, a valid error should be returned", (done) => {
+    it("When a required input is missing, a valid error should be returned!", (done) => {
       chai
         .request(server)
         .post("/api/user")
