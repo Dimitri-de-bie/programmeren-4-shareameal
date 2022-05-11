@@ -94,9 +94,6 @@ let controller = {
               });
             }
             connection.release();
-            // dbconnection.end((err) => {
-            //   console.log("pool was closed.");
-            // });
           }
         );
       });
