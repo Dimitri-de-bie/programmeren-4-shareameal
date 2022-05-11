@@ -67,7 +67,7 @@ let controller = {
               console.log(results2[0].maxid);
               connection.query(
                 "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES(" +
-                  id +
+                  6 +
                   ",'" +
                   user.firstName +
                   "','" +
@@ -86,7 +86,7 @@ let controller = {
               );
               res.status(201).json({
                 status: 201,
-                result: "User " + user.id + " has been succesfully added",
+                result: "User has been succesfully added",
               });
             } else {
               res.status(401).json({
