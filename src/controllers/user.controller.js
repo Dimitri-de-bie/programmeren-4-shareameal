@@ -104,11 +104,6 @@ let controller = {
     });
   },
   getAllUsers: (req, res) => {
-    // res.status(200).json({
-    //   status: 200,
-    //   result: database,
-    // });
-
     dbconnection.getConnection(function (err, connection) {
       if (err) throw err; // not connected!
 
