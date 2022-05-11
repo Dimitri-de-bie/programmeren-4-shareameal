@@ -67,8 +67,7 @@ let controller = {
               console.log(results2[0].maxid);
               connection.query(
                 "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES(" +
-                  6 +
-                  ",'" +
+                  +",'" +
                   user.firstName +
                   "','" +
                   user.lastName +
