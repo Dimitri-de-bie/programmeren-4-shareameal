@@ -40,33 +40,65 @@ describe("Manage users", () => {
     });
   });
 
-  describe("UC-201 add users /api/user", () => {
-    beforeEach((done) => {
-      database = [];
-      done();
-    });
+  // describe("UC-201 add users /api/user", () => {
+  //   beforeEach((done) => {
+  //     database = [];
+  //     done();
+  //   });
 
-    it("When a email already exists a correct error should be shown!", (done) => {
-      chai
-        .request(server)
-        .post("/api/user")
-        .send({
-          firstName: "voornaam",
-          lastName: "achternaam",
-          password: "password",
-          street: "straat",
-          city: "stad",
-          emailAdress: "j.doe@server.com",
-          phoneNumber: "0612345678",
-        })
-        .end((err, res) => {
-          res.should.be.an("object");
-          let { status, result } = res.body;
-          status.should.equals(401);
-          result.should.be.a("string").that.equals("email bestaat al");
+  //   it("When a email already exists a correct error should be shown!", (done) => {
+  //     chai
+  //       .request(server)
+  //       .post("/api/user")
+  //       .send({
+  //         firstName: "voornaam",
+  //         lastName: "achternaam",
+  //         password: "password",
+  //         street: "straat",
+  //         city: "stad",
+  //         emailAdress: "j.doe@server.com",
+  //         phoneNumber: "0612345678",
+  //       })
+  //       .end((err, res) => {
+  //         res.should.be.an("object");
+  //         let { status, result } = res.body;
+  //         status.should.equals(401);
+  //         result.should.be.a("string").that.equals("email bestaat al");
 
-          done();
-        });
-    });
-  });
+  //         done();
+  //       });
+  //   });
+  // });
+
+  // describe("UC-201 add users /api/user", () => {
+  //   beforeEach((done) => {
+  //     database = [];
+  //     done();
+  //   });
+
+  //   it("gebruiker succesvol geregistreerd", (done) => {
+  //     chai
+  //       .request(server)
+  //       .post("/api/user")
+  //       .send({
+  //         firstName: "voornaam",
+  //         lastName: "achternaam",
+  //         password: "password",
+  //         street: "straat",
+  //         city: "stad",
+  //         emailAdress: "email",
+  //         phoneNumber: "0612345678",
+  //       })
+  //       .end((err, res) => {
+  //         res.should.be.an("object");
+  //         let { status, result } = res.body;
+  //         status.should.equals(201);
+  //         result.should.be
+  //           .a("string")
+  //           .that.equals("User has been succesfully added");
+
+  //         done();
+  //       });
+  //   });
+  // });
 });
