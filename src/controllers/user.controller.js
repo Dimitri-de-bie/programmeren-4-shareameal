@@ -86,7 +86,7 @@ let controller = {
               );
               res.status(201).json({
                 status: 201,
-                result: "User " + user.id + " has been succesfully added",
+                result: "User has been succesfully added",
               });
             } else {
               res.status(401).json({
@@ -199,7 +199,7 @@ let controller = {
               console.log("#results = ", results.length);
               res.status(200).json({
                 status: 200,
-                result: `User with ID ${userId} has been deleted!`,
+                result: `User with ID has been deleted!`,
               });
 
               connection.release();
