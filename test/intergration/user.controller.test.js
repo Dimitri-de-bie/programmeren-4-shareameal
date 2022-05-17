@@ -1,4 +1,4 @@
-process.env.DB_DATABASE = process.env.DB_DATABASE || "share-a-meal";
+process.env.DB_DATABASE = process.env.DB_DATABASE || "share-a-meal-testdb";
 process.env.LOGLEVEL = "warn";
 
 const chai = require("chai");
@@ -6,7 +6,12 @@ const chaiHttp = require("chai-http");
 const server = require("../../index");
 const assert = require("assert");
 require("dotenv").config();
-const dbconnection = require("../../database");
+const dbconnection = require("../../src/database/dbconnection");
+const jwt = require("jsonwebtoken");
+const { jwtSecretKey, logger } = require("../../src/config/config");
+
+let database = [];
+
 chai.should();
 chai.use(chaiHttp);
 
