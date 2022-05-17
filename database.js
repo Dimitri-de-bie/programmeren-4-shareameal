@@ -1,10 +1,9 @@
 const mysql = require("mysql");
 require("dotenv").config();
 
-const dbConfig = {
+const pool = mysql.createPool({
   connectionLimit: 10,
   waitForConnections: true,
-  connectionLimit: 10,
   queueLimit: 0,
   multipleStatements: true,
   host: process.env.DB_HOST,
@@ -12,9 +11,7 @@ const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-};
-
-const pool = mysql.createPool(dbConfig);
+});
 
 pool.on("acquire", function (connection) {
   console.log("Connection %d acquired", connection.threadId);

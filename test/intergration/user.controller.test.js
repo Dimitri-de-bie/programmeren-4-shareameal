@@ -1,12 +1,6 @@
-process.env.DB_DATABASE = process.env.DB_DATABASE || "share-a-meal-testdb";
-process.env.LOGLEVEL = "warn";
-
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const server = require("../../index");
-const assert = require("assert");
-require("dotenv").config();
-const dbconnection = require("../../database");
 
 let database = [];
 
