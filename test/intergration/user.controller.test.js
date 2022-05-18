@@ -83,7 +83,7 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
-          isActive: "",
+          isActive: "1",
           password: "password",
           street: "straat",
           city: "stad",
@@ -214,7 +214,7 @@ describe("UC-205 gebruiker wijzigen", () => {
           password: "password",
           street: "straat",
           city: "stad",
-          emailAdress: "nieuwemail",
+          emailAdress: "nieuwemaidal",
           phoneNumber: "0612345678",
         })
         .end((err, res) => {
