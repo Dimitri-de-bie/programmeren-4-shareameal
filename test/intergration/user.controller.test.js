@@ -206,7 +206,7 @@ describe("UC-205 gebruiker wijzigen", () => {
     it("succes wanner succesvol gewijzigt", (done) => {
       chai
         .request(server)
-        .post("/api/user/16")
+        .post("/api/user/6")
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
@@ -222,7 +222,7 @@ describe("UC-205 gebruiker wijzigen", () => {
           status.should.equals(201);
           result.should.be
             .a("string")
-            .that.equals("User with ID 16 succesfully changed");
+            .that.equals("User with ID 6 succesfully changed");
           done();
         });
     });
@@ -268,7 +268,7 @@ describe("UC-206 delete a user", () => {
     it("wanneer een get word gedaan moet er alle users getoont worden", (done) => {
       chai
         .request(server)
-        .delete("/api/user/16")
+        .delete("/api/user/6")
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
