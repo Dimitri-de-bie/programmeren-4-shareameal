@@ -83,7 +83,7 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
-          isActive: "1",
+          isActive: "",
           password: "password",
           street: "straat",
           city: "stad",
