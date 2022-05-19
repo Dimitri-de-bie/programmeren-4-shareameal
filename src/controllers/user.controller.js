@@ -100,28 +100,54 @@ let controller = {
       });
     });
   },
-  getAllUsers: (req, res) => {
+  getAllUsers: (req, res, next) => {
+    let { name, isActive } = req.query;
+    console.log(`name = ${name} isActive = ${isActive}`);
+
+    let queryString = "SELECT * FROM `user`";
+    if (name || isActive) {
+      queryString += " WHERE ";
+      if (name) {
+        queryString += `firstName LIKE ?`;
+      }
+      if (name && isActive) {
+        queryString += `AND `;
+      }
+      if (isActive) {
+        queryString += `isActive =?`;
+      }
+    }
+    queryString += ";";
+    console.log(queryString);
+    name = "%" + name + "%";
+
     dbconnection.getConnection(function (err, connection) {
-      if (err) throw err; // not connected!
+      if (err) {
+        next(err);
+      } // not connected!
 
       // Use the connection
-      connection.query("SELECT * FROM user", function (error, results, fields) {
-        // When done with the connection, release it.
-        connection.release();
+      connection.query(
+        queryString,
+        [name, isActive],
+        function (error, results, fields) {
+          // When done with the connection, release it.
+          connection.release();
 
-        // Handle error after the release.
-        if (error) throw error;
+          // Handle error after the release.
+          if (error) next(error);
 
-        // Don't use the connection here, it has been returned to the pool.
-        console.log("#results = ", results.length);
-        res.status(200).json({
-          statusCode: 200,
-          results: results,
-        });
-        // dbconnection.end((err) => {
-        //   console.log("pool was closed.");
-        // });
-      });
+          // Don't use the connection here, it has been returned to the pool.
+          console.log("#results = ", results.length);
+          res.status(200).json({
+            statusCode: 200,
+            results: results,
+          });
+          // dbconnection.end((err) => {
+          //   console.log("pool was closed.");
+          // });
+        }
+      );
     });
   },
   getUserById: (req, res, next) => {

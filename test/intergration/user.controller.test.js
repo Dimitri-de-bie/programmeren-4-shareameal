@@ -1,6 +1,8 @@
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const server = require("../../index");
+const jwt = require("jsonwebtoken");
+const { jwtSecretKey, logger } = require("../../src/config/config");
 
 let database = [];
 
@@ -50,6 +52,7 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
       chai
         .request(server)
         .post("/api/user")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
@@ -114,6 +117,7 @@ describe("UC-202 overzicht van gebruikers", () => {
       chai
         .request(server)
         .get("/api/user")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
           let { results, statusCode } = res.body;
@@ -135,6 +139,7 @@ describe("UC-204 details van gebruiker", () => {
       chai
         .request(server)
         .get("/api/user/9999")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
@@ -157,6 +162,7 @@ describe("UC-204 details van gebruiker", () => {
       chai
         .request(server)
         .get("/api/user/1")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
@@ -178,6 +184,7 @@ describe("UC-205 gebruiker wijzigen", () => {
       chai
         .request(server)
         .post("/api/user/1")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
@@ -207,6 +214,7 @@ describe("UC-205 gebruiker wijzigen", () => {
       chai
         .request(server)
         .post("/api/user/6")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
@@ -237,6 +245,7 @@ describe("UC-205 gebruiker wijzigen", () => {
       chai
         .request(server)
         .post("/api/user/99999")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
@@ -269,6 +278,7 @@ describe("UC-206 delete a user", () => {
       chai
         .request(server)
         .delete("/api/user/6")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
@@ -290,6 +300,7 @@ describe("UC-206 delete a user", () => {
       chai
         .request(server)
         .delete("/api/user/99999")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;

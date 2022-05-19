@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
+const authController = require("../controllers/auth.controller");
 
 router.get("/", (req, res) => {
   res.status(200).json({
@@ -22,17 +23,33 @@ router.get("/", (req, res) => {
 router.post("/api/user", userController.validateUser, userController.addUser);
 
 //specifieke user ophalen
-router.get("/api/user/:userId", userController.getUserById);
+router.get(
+  "/api/user/:userId",
+  authController.validateToken,
+  userController.getUserById
+);
 
 //specifieke user updaten
-router.post("/api/user/:userId", userController.updateUser);
+router.post(
+  "/api/user/:userId",
+  authController.validateToken,
+  userController.updateUser
+);
 
 //specifieke user deleten
-router.delete("/api/user/:userId", userController.deleteUser);
+router.delete(
+  "/api/user/:userId",
+  authController.validateToken,
+  userController.deleteUser
+);
 //alle users ophalen
-router.get("/api/user", userController.getAllUsers);
+router.get(
+  "/api/user",
+  authController.validateToken,
+  userController.getAllUsers
+);
 //personal user ophalen
-router.get("/api/personaluser", (req, res) => {
+router.get("/api/user/profile", (req, res) => {
   res.status(200).json({
     status: 200,
     result: "deze funtionaliteit is nog niet geraliseerd",
