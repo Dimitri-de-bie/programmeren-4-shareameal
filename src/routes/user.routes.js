@@ -21,7 +21,13 @@ router.get("/", (req, res) => {
 
 //user toevoegen
 router.post("/api/user", userController.validateUser, userController.addUser);
-
+//personal user ophalen
+router.get("/api/user/profile", (req, res) => {
+  res.status(200).json({
+    status: 200,
+    result: "deze funtionaliteit is nog niet geraliseerd",
+  });
+});
 //specifieke user ophalen
 router.get(
   "/api/user/:userId",
@@ -48,12 +54,5 @@ router.get(
   authController.validateToken,
   userController.getAllUsers
 );
-//personal user ophalen
-router.get("/api/user/profile", (req, res) => {
-  res.status(200).json({
-    status: 200,
-    result: "deze funtionaliteit is nog niet geraliseerd",
-  });
-});
 
 module.exports = router;
