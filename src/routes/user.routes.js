@@ -22,12 +22,11 @@ router.get("/", (req, res) => {
 //user toevoegen
 router.post("/api/user", userController.validateUser, userController.addUser);
 //personal user ophalen
-router.get("/api/user/profile", (req, res) => {
-  res.status(200).json({
-    status: 200,
-    result: "deze funtionaliteit is nog niet geraliseerd",
-  });
-});
+router.get(
+  "/api/user/profile",
+  authController.validateToken,
+  userController.userProfile
+);
 //specifieke user ophalen
 router.get(
   "/api/user/:userId",

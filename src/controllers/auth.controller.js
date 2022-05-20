@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 const dbconnection = require("../../database");
 const logger = require("../config/config").logger;
 const jwtSecretKey = require("../config/config").jwtSecretKey;
-let id = 0;
 
 let controller = {
   login(req, res, next) {
@@ -117,6 +116,7 @@ let controller = {
         if (err) {
           logger.warn("Not authorized");
           res.status(401).json({
+            status: 401,
             error: "Not authorized",
             datetime: new Date().toISOString(),
           });
