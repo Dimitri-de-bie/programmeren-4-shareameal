@@ -1,7 +1,6 @@
 # programmeren-4-share-a-meal-API
 
-![example workflow](https://github.com/Dimitri-de-bie/programmeren-4-shareameal
-/actions/workflows/main.yml/badge.svg)
+[![Deploy to Heroku](https://github.com/Dimitri-de-bie/programmeren-4-shareameal/actions/workflows/main.yml/badge.svg)]
 
 This is a project i made for Avans hogeschool for the "programmeren 4" cource. This project is a api that allows you to create,read,update, delete (CRUD) users, and meals. It also has a user login function so that you have to be logged in with a token in order for you to access the secured parts of the api. The project includes testcases which automaticly tests if the app is working as intended. The api is also running on https://dimitri-sharemeal.herokuapp.com/ using a mysql database.
 
