@@ -6,7 +6,7 @@ Project api share-a-meal
 
 ## Description
 
-This is a project i made for Avans hogeschool for the "programmeren 4" cource. This project is a api that allows you to create,read,update, delete (CRUD) users, and meals is missing update. It also has a user login function so that you have to be logged in with a token in order for you to access the secured parts of the api. The project includes testcases which automaticly tests if the app is working as intended. The api is also running on https://dimitri-sharemeal.herokuapp.com/ using a mysql database. The project is based on a project from cource "programmeren 3" where I had to make a android application using a api with the same functionalities. There is also a mysql script included in the project to make a correct database.
+This is a project i made for Avans hogeschool for the "programmeren 4" course. This project is a api that allows you to create,read,update, delete (CRUD) users, and meals is missing update. It also has a user login function so that you have to be logged in with a token in order for you to access the secured parts of the api. The project includes testcases which automaticly tests if the app is working as intended. The api is also running on https://dimitri-sharemeal.herokuapp.com/ using a mysql database. The project is based on a project from course "programmeren 3" where I had to make a android application using a api with the same functionalities. There is also a mysql script included in the project to make a correct database.
 
 ## Badges
 
