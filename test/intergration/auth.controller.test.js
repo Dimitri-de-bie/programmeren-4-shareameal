@@ -112,29 +112,68 @@ describe("UC-101 login", () => {
           done();
         });
     });
-    describe("UC-101-5 gebruiker succesvol ingelogd /api/auth/login", () => {
-      beforeEach((done) => {
-        database = [];
-        done();
-      });
+  });
+  describe("UC-101-5 gebruiker succesvol ingelogd /api/auth/login", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+    it("test login gebruiker", (done) => {
+      chai
+        .request(server)
+        .post("/api/user")
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "Iseen1",
+          street: "straat",
+          city: "stad",
+          emailAdress: "test@test.com",
+          phoneNumber: "0612345678",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(201);
+          result.should.be
+            .a("string")
+            .that.equals("User has been succesfully added");
 
-      it("json met foutmelding", (done) => {
-        chai
-          .request(server)
-          .post("/api/auth/login")
-          .send({
-            emailAdress: "email@hotmail.com",
-            password: "Iseen1",
-          })
-          .end((err, res) => {
-            res.should.be.an("object");
-            let { statusCode, results } = res.body;
-            statusCode.should.equals(200);
-            results.id.should.be.a("number").that.equals(1);
+          done();
+        });
+    });
 
-            done();
-          });
-      });
+    it("json met foutmelding", (done) => {
+      chai
+        .request(server)
+        .post("/api/auth/login")
+        .send({
+          emailAdress: "test@test.com",
+          password: "Iseen1",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { statusCode, results } = res.body;
+          statusCode.should.equals(200);
+          results.id.should.be.a("number").that.equals(6);
+
+          done();
+        });
+    });
+    it("test login gebruiker", (done) => {
+      chai
+        .request(server)
+        .delete("/api/user/6")
+        .set("authorization", "Bearer " + jwt.sign({ userId: 6 }, jwtSecretKey))
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(200);
+          result.should.be
+            .a("string")
+            .that.equals("User with ID has been deleted!");
+          done();
+        });
     });
   });
 });
