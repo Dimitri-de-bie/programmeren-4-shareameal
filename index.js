@@ -19,7 +19,7 @@ app.all("*", (req, res, next) => {
   next();
 });
 
-// app.use(mealrouter);
+app.use(mealrouter);
 app.use(userrouter);
 app.use("/api", authRoutes);
 

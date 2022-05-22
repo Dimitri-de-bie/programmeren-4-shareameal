@@ -6,12 +6,40 @@ const jwtSecretKey = require("../config/config").jwtSecretKey;
 
 let controller = {
   login(req, res, next) {
+    let emailcheck = false;
+    let passwordcheck = false;
     dbconnection.getConnection((err, connection) => {
       if (err) {
         logger.error("Error getting connection from dbconnection");
         res.status(500).json({
           error: err.toString(),
           datetime: new Date().toISOString(),
+        });
+      }
+      //The personal_info part contains the following ASCII characters.
+      // Uppercase (A-Z) and lowercase (a-z) English letters.
+      // Digits (0-9).
+      // Characters ! # $ % & ' * + - / = ? ^ _ ` { | } ~
+      // Character . ( period, dot or fullstop) provided that it is not the first or last character and it will not come one after the other.
+      if (
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+          req.body.emailAdress
+        )
+      ) {
+        emailcheck = true;
+      } else {
+        res.status(400).json({
+          status: 400,
+          result: "email invalid",
+        });
+      }
+      //To check a password between 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter
+      if (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/.test(req.body.password)) {
+        passwordcheck = true;
+      } else {
+        res.status(400).json({
+          status: 400,
+          result: "password invalid",
         });
       }
       if (connection) {
@@ -28,7 +56,8 @@ let controller = {
                 datetime: new Date().toISOString(),
               });
             }
-            if (rows) {
+            if (rows && emailcheck == true && passwordcheck == true) {
+              console.log(emailcheck);
               // 2. Er was een resultaat, check het password.
               if (
                 rows &&
@@ -59,7 +88,8 @@ let controller = {
                 );
               } else {
                 logger.info("User not found or password invalid");
-                res.status(401).json({
+                res.status(404).json({
+                  status: 404,
                   message: "User not found or password invalid",
                   datetime: new Date().toISOString(),
                 });
@@ -87,7 +117,8 @@ let controller = {
       );
       next();
     } catch (ex) {
-      res.status(422).json({
+      res.status(400).json({
+        status: 400,
         error: ex.toString(),
         datetime: new Date().toISOString(),
       });
@@ -105,6 +136,7 @@ let controller = {
     if (!authHeader) {
       logger.warn("Authorization header missing!");
       res.status(401).json({
+        status: 401,
         error: "Authorization header missing!",
         datetime: new Date().toISOString(),
       });

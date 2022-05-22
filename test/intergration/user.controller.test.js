@@ -41,8 +41,65 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         });
     });
   });
+  describe("UC-201-2 niet valide email adress /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
 
-  describe("UC-201-2 email already exists /api/user ", () => {
+    it("email niet valide json", (done) => {
+      chai
+        .request(server)
+        .post("/api/user")
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "Iseen1",
+          street: "straat",
+          city: "stad",
+          emailAdress: "test",
+          phoneNumber: "0612345678",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(400);
+          result.should.be.a("string").that.equals("email invalid");
+
+          done();
+        });
+    });
+  });
+  describe("UC-201-3 niet valide password /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("password niet valide json", (done) => {
+      chai
+        .request(server)
+        .post("/api/user")
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "test",
+          street: "straat",
+          city: "stad",
+          emailAdress: "test@test.com",
+          phoneNumber: "0612345678",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(400);
+          result.should.be.a("string").that.equals("password invalid");
+
+          done();
+        });
+    });
+  });
+  describe("UC-201-4 email/gebruiker already exists /api/user ", () => {
     beforeEach((done) => {
       database = [];
       done();
@@ -56,7 +113,7 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
-          password: "password",
+          password: "Iseen1",
           street: "straat",
           city: "stad",
           emailAdress: "j.doe@server.com",
@@ -65,7 +122,7 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
-          status.should.equals(401);
+          status.should.equals(409);
           result.should.be.a("string").that.equals("email bestaat al");
 
           done();
@@ -86,10 +143,10 @@ describe("UC-201 Registreren als nieuwe gebruiker", () => {
         .send({
           firstName: "voornaam",
           lastName: "achternaam",
-          password: "password",
+          password: "Iseen1",
           street: "straat",
           city: "stad",
-          emailAdress: "dkangnawk",
+          emailAdress: "test@test.com",
           phoneNumber: "0612345678",
         })
         .end((err, res) => {
@@ -127,16 +184,16 @@ describe("UC-202 overzicht van gebruikers", () => {
         });
     });
   });
-  describe("UC-202-1 toon alle users die active zijn /api/user ", () => {
+  describe("UC-202-3 toon alle users met niet bestaande naam hebben /api/user ", () => {
     beforeEach((done) => {
       database = [];
       done();
     });
 
-    it("alle active users worden getoont", (done) => {
+    it("alle user met niet bestaande naam worden getoont ", (done) => {
       chai
         .request(server)
-        .get("/api/user?isActive=1")
+        .get("/api/user?name=z")
         .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
         .end((err, res) => {
           res.should.be.an("object");
@@ -147,7 +204,48 @@ describe("UC-202 overzicht van gebruikers", () => {
         });
     });
   });
-  describe("UC-202-1 toon alle users die de letter h hebben /api/user ", () => {
+
+  describe("UC-202-4 toon alle users die active zijn /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("alle active users worden getoont", (done) => {
+      chai
+        .request(server)
+        .get("/api/user?isActive=true")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { results, statusCode } = res.body;
+          statusCode.should.equals(200);
+          results.should.be.a("array");
+          done();
+        });
+    });
+  });
+  describe("UC-202-5 toon alle users die niet active zijn /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("alle nniet active users worden getoont", (done) => {
+      chai
+        .request(server)
+        .get("/api/user?isActive=false")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { results, statusCode } = res.body;
+          statusCode.should.equals(200);
+          results.should.be.a("array");
+          done();
+        });
+    });
+  });
+  describe("UC-202-6 toon alle users die de letter h hebben /api/user ", () => {
     beforeEach((done) => {
       database = [];
       done();
@@ -169,7 +267,7 @@ describe("UC-202 overzicht van gebruikers", () => {
   });
 });
 describe("UC-203 userprofiel", () => {
-  describe("UC-203-1 gebruikerid bestaat niet /api/user", () => {
+  describe("UC-203-1 niet bestaande token /api/user", () => {
     beforeEach((done) => {
       database = [];
       done();
@@ -201,10 +299,7 @@ describe("UC-203 userprofiel", () => {
       chai
         .request(server)
         .get("/api/user/profile")
-        .set(
-          "authorization",
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY1Mjk2OTQ4MSwiZXhwIjoxNjU0MDA2MjgxfQ.sX5Gl1CyC-BSbQp63dsw_HKPIqLh15dMFuCwdIBGXYo"
-        )
+        .set("authorization", "Bearer " + jwt.sign({ userId: 6 }, jwtSecretKey))
 
         .end((err, res) => {
           res.should.be.an("object");
@@ -218,6 +313,28 @@ describe("UC-203 userprofiel", () => {
   });
 });
 describe("UC-204 details van gebruiker", () => {
+  describe("UC-204-1 niet bestaande token /api/user", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("Er moet een fout code gegeven worden", (done) => {
+      chai
+        .request(server)
+        .get("/api/user/profile")
+        .set("authorization", "Bearer 99999")
+
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, error } = res.body;
+          status.should.equals(401);
+          error.should.be.a("string").that.equals("Not authorized");
+
+          done();
+        });
+    });
+  });
   describe("UC-204-2 gebruikerid bestaat niet /api/user", () => {
     beforeEach((done) => {
       database = [];
@@ -232,7 +349,7 @@ describe("UC-204 details van gebruiker", () => {
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
-          status.should.equals(401);
+          status.should.equals(404);
           result.should.be
             .a("string")
             .that.equals("User with ID 9999 not found");
@@ -291,7 +408,89 @@ describe("UC-205 gebruiker wijzigen", () => {
         });
     });
   });
+  describe("UC-205-3 nonvalide telefoonnummer /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
 
+    it("succes wanner succesvol gewijzigt", (done) => {
+      chai
+        .request(server)
+        .post("/api/user/6")
+        .set("authorization", "Bearer " + jwt.sign({ userId: 6 }, jwtSecretKey))
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "password",
+          street: "straat",
+          city: "stad",
+          emailAdress: "nieuwemaidal",
+          phoneNumber: "061",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(400);
+          result.should.be
+            .a("string")
+            .that.equals("niet valide telefoonnummer");
+          done();
+        });
+    });
+  });
+  describe("UC-205-4 gebruikerid bestaat niet /api/user", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("error krijgen dat id niet gevonden kan worden", (done) => {
+      chai
+        .request(server)
+        .post("/api/user/9999")
+        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, result } = res.body;
+          status.should.equals(400);
+          result.should.be
+            .a("string")
+            .that.equals("User with ID 9999 not found");
+          done();
+        });
+    });
+  });
+  describe("UC-205-5 niet ingelogd /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("niet ingelogd", (done) => {
+      chai
+        .request(server)
+        .post("/api/user/99999")
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "password",
+          street: "straat",
+          city: "stad",
+          emailAdress: "nieuwemail",
+          phoneNumber: "0612345678",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, error } = res.body;
+          status.should.equals(401);
+          error.should.be
+            .a("string")
+            .that.equals("Authorization header missing!");
+          done();
+        });
+    });
+  });
   describe("UC-205-6 succesvol gewijzigd /api/user ", () => {
     beforeEach((done) => {
       database = [];
@@ -315,41 +514,10 @@ describe("UC-205 gebruiker wijzigen", () => {
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
-          status.should.equals(201);
+          status.should.equals(200);
           result.should.be
             .a("string")
             .that.equals("User with ID 6 succesfully changed");
-          done();
-        });
-    });
-  });
-  describe("UC-205-4 gebruiker bestaat niet /api/user ", () => {
-    beforeEach((done) => {
-      database = [];
-      done();
-    });
-
-    it("gebruiker bestaat niet error", (done) => {
-      chai
-        .request(server)
-        .post("/api/user/99999")
-        .set("authorization", "Bearer " + jwt.sign({ id: 1 }, jwtSecretKey))
-        .send({
-          firstName: "voornaam",
-          lastName: "achternaam",
-          password: "password",
-          street: "straat",
-          city: "stad",
-          emailAdress: "nieuwemail",
-          phoneNumber: "0612345678",
-        })
-        .end((err, res) => {
-          res.should.be.an("object");
-          let { status, result } = res.body;
-          status.should.equals(401);
-          result.should.be
-            .a("string")
-            .that.equals("User with ID 99999 not found");
           done();
         });
     });
@@ -370,10 +538,41 @@ describe("UC-206 delete a user", () => {
         .end((err, res) => {
           res.should.be.an("object");
           let { status, result } = res.body;
-          status.should.equals(401);
+          status.should.equals(400);
           result.should.be
             .a("string")
             .that.equals("User with ID 99999 not found!");
+          done();
+        });
+    });
+  });
+
+  describe("UC-206-2 niet ingelogd /api/user ", () => {
+    beforeEach((done) => {
+      database = [];
+      done();
+    });
+
+    it("niet ingelogd", (done) => {
+      chai
+        .request(server)
+        .post("/api/user/99999")
+        .send({
+          firstName: "voornaam",
+          lastName: "achternaam",
+          password: "password",
+          street: "straat",
+          city: "stad",
+          emailAdress: "nieuwemail",
+          phoneNumber: "0612345678",
+        })
+        .end((err, res) => {
+          res.should.be.an("object");
+          let { status, error } = res.body;
+          status.should.equals(401);
+          error.should.be
+            .a("string")
+            .that.equals("Authorization header missing!");
           done();
         });
     });

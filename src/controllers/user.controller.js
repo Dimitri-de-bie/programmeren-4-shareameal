@@ -40,68 +40,102 @@ let controller = {
     let user = req.body;
     let emailAdress = req.body.emailAdress;
     let controle;
+    let emailcheck = false;
+    let passwordcheck = false;
 
-    dbconnection.getConnection(function (err, connection) {
-      if (err) throw err; // not connected!
+    //The personal_info part contains the following ASCII characters.
+    // Uppercase (A-Z) and lowercase (a-z) English letters.
+    // Digits (0-9).
+    // Characters ! # $ % & ' * + - / = ? ^ _ ` { | } ~
+    // Character . ( period, dot or fullstop) provided that it is not the first or last character and it will not come one after the other.
 
-      // Use the connection
-      connection.query("SELECT * FROM user", function (error, results, fields) {
-        // When done with the connection, release it.
+    if (
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.emailAdress)
+    ) {
+      emailcheck = true;
+    } else {
+      res.status(400).json({
+        status: 400,
+        result: "email invalid",
+      });
+    }
+    //To check a password between 6 to 20 characters which contain at least one numeric digit, one uppercase and one lowercase letter
+    if (/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/.test(req.body.password)) {
+      passwordcheck = true;
+    } else {
+      res.status(400).json({
+        status: 400,
+        result: "password invalid",
+      });
+    }
+    if (emailcheck == true && passwordcheck == true) {
+      dbconnection.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
 
-        for (let i = 0; i < results.length; i++) {
-          if (results[i].emailAdress == emailAdress) {
-            controle = false;
-          }
-        }
-        // Handle error after the release.
-        if (error) throw error;
-        // Don't use the connection here, it has been returned to the pool.
-        console.log("#results = ", results.length);
+        // Use the connection
         connection.query(
-          "SELECT MAX(id) as maxid FROM user;",
-          function (error, results2, fields) {
-            if (controle != false) {
-              id = results2[0].maxid + 1;
-              user = {
-                id,
-                ...user,
-              };
-              console.log(user);
-              console.log(results2[0].maxid);
-              connection.query(
-                "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES(" +
-                  id +
-                  ",'" +
-                  user.firstName +
-                  "','" +
-                  user.lastName +
-                  "','1','" +
-                  user.emailAdress +
-                  "','" +
-                  user.password +
-                  "'," +
-                  user.phoneNumber +
-                  ",'','" +
-                  user.street +
-                  "','" +
-                  user.city +
-                  "')"
-              );
-              res.status(201).json({
-                status: 201,
-                result: "User has been succesfully added",
-              });
-            } else {
-              res.status(401).json({
-                status: 401,
-                result: "email bestaat al",
-              });
+          "SELECT * FROM user",
+          function (error, results, fields) {
+            // When done with the connection, release it.
+
+            for (let i = 0; i < results.length; i++) {
+              if (results[i].emailAdress == emailAdress) {
+                controle = false;
+              }
             }
-            connection.release();
+            console.log(user.emailAdress);
+            // Handle error after the release.
+            if (error) throw error;
+            // Don't use the connection here, it has been returned to the pool.
+            console.log("#results = ", results.length);
+            connection.query(
+              "SELECT MAX(id) as maxid FROM user;",
+              function (error, results2, fields) {
+                if (controle != false) {
+                  id = results2[0].maxid + 1;
+                  user = {
+                    id,
+                    ...user,
+                  };
+
+                  console.log(user);
+                  console.log(results2[0].maxid);
+                  connection.query(
+                    "INSERT INTO user (id, firstName, lastName, isActive, emailAdress, password, phoneNumber, roles, street, city) VALUES(" +
+                      id +
+                      ",'" +
+                      user.firstName +
+                      "','" +
+                      user.lastName +
+                      "','1','" +
+                      user.emailAdress +
+                      "','" +
+                      user.password +
+                      "'," +
+                      user.phoneNumber +
+                      ",'','" +
+                      user.street +
+                      "','" +
+                      user.city +
+                      "')"
+                  );
+                  res.status(201).json({
+                    status: 201,
+                    result: "User has been succesfully added",
+                  });
+                  connection.release();
+                } else {
+                  res.status(409).json({
+                    status: 409,
+                    result: "email bestaat al",
+                  });
+                }
+              }
+            );
           }
         );
       });
-    });
+    }
   },
   getAllUsers: (req, res, next) => {
     let { name, isActive } = req.query;
@@ -178,7 +212,7 @@ let controller = {
           });
         } else {
           const error = {
-            status: 401,
+            status: 404,
             result: `User with ID ${userId} not found`,
           };
           next(error);
@@ -243,8 +277,8 @@ let controller = {
             });
           }
         } else {
-          res.status(401).json({
-            status: 401,
+          res.status(400).json({
+            status: 400,
             result: `User with ID ${userId} not found!`,
           });
         }
@@ -279,89 +313,98 @@ let controller = {
         }
 
         // Don't use the connection here, it has been returned to the pool.
-        console.log("#results = ", results.length);
-        if (user.emailAdress !== undefined) {
-          if (controle == true) {
-            if (currentuserid == userId) {
-              connection.query(
-                "SELECT * FROM user WHERE id = " + userId + "",
-                function (error, results2, fields) {
-                  console.log("opgehalde email" + results2[0].emailAdress);
-                  console.log("opgegeven email:" + user.emailAdress);
-                  for (let i = 0; i < results.length; i++) {
-                    if (results2[0].emailAdress == user.emailAdress) {
-                      controle2 = true;
-                      break;
-                    }
-                    if (results[i].emailAdress == user.emailAdress) {
-                      controle2 = false;
-                      break;
-                    }
-                  }
-                  if (controle2 == true) {
-                    // Handle error after the release.
-                    if (error) throw error;
-                    id = parseInt(userId);
-                    user = {
-                      id,
-                      ...user,
-                    };
 
-                    connection.query(
-                      "UPDATE `user` SET `firstName`='" +
-                        user.firstName +
-                        "',`lastName`='" +
-                        user.lastName +
-                        "',`emailAdress`='" +
-                        user.emailAdress +
-                        "',`password`='" +
-                        user.password +
-                        "',`phoneNumber`='" +
-                        user.phoneNumber +
-                        "',`street`='" +
-                        user.street +
-                        "',`city`='" +
-                        user.city +
-                        "' WHERE id = " +
-                        userId +
-                        ""
-                    );
-                    console.log(user);
-                    res.status(201).json({
-                      status: 201,
-                      result: `User with ID ${userId} succesfully changed`,
-                    });
-                  } else {
-                    console.log(controle2);
-                    res.status(401).json({
-                      status: 401,
-                      result: `Email already exists`,
-                    });
+        console.log("#results = ", results.length);
+
+        if (controle == true) {
+          if (user.emailAdress !== undefined) {
+            if (/^\d{10}$/.test(user.phoneNumber)) {
+              if (currentuserid == userId) {
+                connection.query(
+                  "SELECT * FROM user WHERE id = " + userId + "",
+                  function (error, results2, fields) {
+                    console.log("opgehalde email" + results2[0].emailAdress);
+                    console.log("opgegeven email:" + user.emailAdress);
+                    for (let i = 0; i < results.length; i++) {
+                      if (results2[0].emailAdress == user.emailAdress) {
+                        controle2 = true;
+                        break;
+                      }
+                      if (results[i].emailAdress == user.emailAdress) {
+                        controle2 = false;
+                        break;
+                      }
+                    }
+                    if (controle2 == true) {
+                      // Handle error after the release.
+                      if (error) throw error;
+                      id = parseInt(userId);
+                      user = {
+                        id,
+                        ...user,
+                      };
+
+                      connection.query(
+                        "UPDATE `user` SET `firstName`='" +
+                          user.firstName +
+                          "',`lastName`='" +
+                          user.lastName +
+                          "',`emailAdress`='" +
+                          user.emailAdress +
+                          "',`password`='" +
+                          user.password +
+                          "',`phoneNumber`='" +
+                          user.phoneNumber +
+                          "',`street`='" +
+                          user.street +
+                          "',`city`='" +
+                          user.city +
+                          "' WHERE id = " +
+                          userId +
+                          ""
+                      );
+                      console.log(user);
+                      res.status(200).json({
+                        status: 200,
+                        result: `User with ID ${userId} succesfully changed`,
+                      });
+                    } else {
+                      console.log(controle2);
+                      res.status(401).json({
+                        status: 401,
+                        result: `Email already exists`,
+                      });
+                    }
                   }
-                }
-              );
+                );
+              } else {
+                res.status(401).json({
+                  status: 401,
+                  result: `your userid did not match`,
+                });
+              }
             } else {
-              res.status(401).json({
-                status: 401,
-                result: `your userid did not match`,
+              res.status(400).json({
+                status: 400,
+                result: `niet valide telefoonnummer`,
               });
             }
           } else {
-            res.status(401).json({
-              status: 401,
-              result: `User with ID ${userId} not found`,
+            res.status(400).json({
+              status: 400,
+              result: `emailadress ontbreekt`,
             });
           }
-
-          // dbconnection.end((err) => {
-          //   console.log("pool was closed.");
-          // });
         } else {
           res.status(400).json({
             status: 400,
-            result: `emailadress ontbreekt`,
+            result: `User with ID ${userId} not found`,
           });
         }
+
+        // dbconnection.end((err) => {
+        //   console.log("pool was closed.");
+        // });
       });
     });
   },
